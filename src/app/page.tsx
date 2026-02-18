@@ -1,65 +1,99 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import Hero from '@/components/Hero';
+import AboutTab from '@/components/AboutTab';
+import CVTab from '@/components/CVTab';
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<'about' | 'cv'>('about');
+  const [scrollY, setScrollY] = useState(0);
+  const scrollRef = useRef<HTMLElement | null>(null);
+
+  // Track scroll position
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      setScrollY(el.scrollTop);
+    };
+
+    handleScroll();
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Calculate background gradient progress based on scroll
+  const scrollProgress = Math.min(1, scrollY / 1000);
+  const backgroundColor = `rgb(${Math.round(255 - scrollProgress * 30)}, ${Math.round(240 - scrollProgress * 60)}, ${Math.round(240 - scrollProgress * 60)})`;
+  const viaColor = `rgb(${Math.round(220 - scrollProgress * 40)}, ${Math.round(150 - scrollProgress * 50)}, ${Math.round(150 - scrollProgress * 50)})`;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen relative" style={{ background: `linear-gradient(to bottom right, ${backgroundColor}, ${viaColor}, ${backgroundColor})` }}>
+      {/* Fixed gradient background */}
+      <div className="fixed inset-0 pointer-events-none -z-10" style={{ 
+        background: `linear-gradient(135deg, ${backgroundColor} 0%, ${viaColor} 50%, ${backgroundColor} 100%)`,
+        transition: 'background 0.1s ease-out'
+      }} />
+
+      {/* HERO Content */}
+      <div ref={scrollRef as React.Ref<HTMLDivElement>} className="h-screen overflow-y-auto snap-y snap-proximity scroll-smooth relative z-0 bg-transparent">
+
+        {/* Full-width Hero Section */}
+        <div className="w-screen">
+          <Hero />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Constrained main content */}
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 relative z-0 bg-transparent">
+
+        <section className="snap-start bg-white rounded-lg shadow-md overflow-hidden">
+          {/* Tab Navigation Bar*/}
+          <div
+            className="flex border-b-2 border-gray-200 transition-all duration-300 rounded-t-lg"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <button
+              onClick={() => setActiveTab('about')} //About Tab button
+              className={`w-1/2 py-4 px-8 font-semibold text-lg transition-all duration-300 rounded-tl-lg ${
+                activeTab === 'about'
+                  ? 'text-white' //Active Colour
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200' //Inactive Colour
+              }`}
+              style={activeTab === 'about' ? { backgroundColor: 'var(--accent-primary)' } : {}}
+            >
+              About
+            </button>
+            <button
+              onClick={() => setActiveTab('cv')} // CV Tab Button
+              className={`w-1/2 py-4 px-8 font-semibold text-lg transition-all duration-300 rounded-tr-lg ${
+                activeTab === 'cv'
+                  ? 'text-white' //Active Colour
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200' //Inactive Colour
+              }`}
+              style={activeTab === 'cv' ? { backgroundColor: 'var(--accent-primary)' } : {}}
+            >
+              CV
+            </button>
+          </div>
+
+          {/* About Tab */}
+          {activeTab === 'about' && <AboutTab />}
+
+          {/* CV Tab */}
+          {activeTab === 'cv' && <CVTab />}
+
+        </section>
       </main>
+      </div>
+
+      {/* Footer */}
+      <footer className="text-white py-8 mt-16 relative z-10" style={{ backgroundColor: 'var(--accent-dark)' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-400">© 2026 Victor Boddy. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
+
