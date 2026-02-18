@@ -1,85 +1,73 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { PDBLoader } from 'three/examples/jsm/loaders/PDBLoader.js';
+import { useGLTF } from '@react-three/drei';
+import { useFrame, useThree } from '@react-three/fiber';
+import { useLayoutEffect, useRef } from 'react';
 
 export default function ProteinStructure() {
-  const groupRef = useRef<THREE.Group>(null);
+  const { scene } = useGLTF('/crispr_hero_opt.glb');
+  const pivot = useRef<THREE.Group>(null);
+  const spinner = useRef<THREE.Group>(null);
+  const { camera } = useThree();
 
-  useEffect(() => {
-    console.log('ProteinStructure component mounted');
-    const loader = new PDBLoader();
-    
-    const onLoad = (pdb: any) => {
-      console.log('✓ PDB loaded successfully');
+  const screenFill = 0.75;
 
-      const geometryAtoms = pdb.geometryAtoms;
-      const geometryBonds = pdb.geometryBonds;
+  useLayoutEffect(() => {
+    if (!pivot.current || !spinner.current) return;
 
-      console.log('Atoms vertices:', geometryAtoms.attributes.position?.count);
-      console.log('Bonds vertices:', geometryBonds.attributes.position?.count);
+    spinner.current.add(scene);
 
-      // Render atoms as points instead of lines
-      const atomsPointsMaterial = new THREE.PointsMaterial({ 
-        color: 0xff4444,
-        size: 3,
-        transparent: true,
-        opacity: 0.9,
-        sizeAttenuation: false
-      });
-      const atomsPoints = new THREE.Points(geometryAtoms, atomsPointsMaterial);
+    // Center the model at origin
+    const box = new THREE.Box3().setFromObject(scene);
+    const size = new THREE.Vector3();
+    const ctr = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(ctr);
+    scene.position.sub(ctr);
 
-      // Render bonds as lines
-      const bondsMaterial = new THREE.LineBasicMaterial({ 
-        color: 0xcc0000,
-        linewidth: 2,
-        transparent: true,
-        opacity: 0.9
-      });
-      const bonds = new THREE.LineSegments(geometryBonds, bondsMaterial);
+    // Scale to fill the viewport
+    const vHeight =
+      2 * Math.tan(((45 * Math.PI) / 180) / 2) * Math.abs(camera.position.z);
+    const modelHeight = Math.max(size.y, size.x, size.z, 1e-4);
+    const scale = (screenFill * vHeight) / modelHeight;
+    pivot.current.scale.setScalar(scale);
 
-      if (groupRef.current) {
-        // Don't clear - keep test cube, add PDB geometry alongside it
-        groupRef.current.add(atomsPoints);
-        groupRef.current.add(bonds);
-        
-        // Only center, don't scale - let camera handle the view
-        const box = new THREE.Box3().setFromObject(atomsPoints);
-        const center = box.getCenter(new THREE.Vector3());
-        atomsPoints.position.sub(center);
-        bonds.position.sub(center);
-        
-        console.log('✓ Protein centered at origin');
+    console.log('✓ CRISPR-Cas9 GLTF loaded and centered');
+
+    // Make only chain B (green / Cas9 surface) translucent based on material color
+    const greenColor = new THREE.Color(0, 1, 0); // PyMOL "green"
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.material) {
+        const mat = child.material as THREE.MeshStandardMaterial;
+        if (mat.color) {
+          const c = mat.color;
+          // Check if the material color is predominantly green (chain B from PyMOL)
+          if (c.g > c.r && c.g > c.b) {
+            child.material = mat.clone();
+            (child.material as THREE.MeshStandardMaterial).transparent = true;
+            (child.material as THREE.MeshStandardMaterial).opacity = 0.4;
+            (child.material as THREE.MeshStandardMaterial).depthWrite = false;
+            (child.material as THREE.MeshStandardMaterial).side = THREE.DoubleSide;
+            child.renderOrder = -1;
+          }
+        }
       }
-    };
+    });
 
-    const onProgress = (progress: any) => {
-      const percent = Math.round((progress.loaded / progress.total) * 100);
-      console.log('Loading PDB: ' + percent + '%');
-    };
+    console.log(`✓ Traversed ${scene.children.length} top-level objects`);
+  }, [scene, camera]);
 
-    const onError = (error: any) => {
-      console.error('✗ Error loading PDB:', error);
-    };
-
-    console.log('Starting to load PDB from /5F9R.pdb');
-    loader.load('/5F9R.pdb', onLoad, onProgress, onError);
-  }, []);
-
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.rotation.x += 0.002;
-      groupRef.current.rotation.y += 0.003;
-    }
+  useFrame(({ clock }) => {
+    if (!spinner.current) return;
+    spinner.current.rotation.y = clock.getElapsedTime() * 0.3;
   });
 
-  return <group ref={groupRef}>
-    {/* Test cube to verify Canvas is working */}
-    <mesh position={[0, 0, 0]}>
-      <boxGeometry args={[0.2, 0.2, 0.2]} />
-      <meshBasicMaterial color={0xff0000} />
-    </mesh>
-  </group>;
+  return (
+    <group ref={pivot}>
+      <group ref={spinner} />
+    </group>
+  );
 }
+
+useGLTF.preload('/crispr_hero_opt.glb');

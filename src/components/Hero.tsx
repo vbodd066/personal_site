@@ -82,14 +82,14 @@ export default function Hero() {
       </div>
 
       {/* Protein Structure Canvas - Right Side */}
-      <div className="absolute bottom-0 right-0 w-96 h-96 pointer-events-none z-0">
+      <div className="absolute bottom-0 right-15 w-96 h-96 pointer-events-none z-0">
         <Canvas
           className="w-full h-full"
           camera={{ position: [0, 0, 200], fov: 45 }} //the third value is the camera distance and can effect the size of the protein structure
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
           dpr={[1, 2]}
         >
-          <ambientLight intensity={0.8} />
+          <ambientLight intensity={1.0} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <Suspense fallback={null}>
             <ProteinStructure />

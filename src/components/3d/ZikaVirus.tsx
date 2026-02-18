@@ -4,7 +4,6 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useRef } from "react";
-import { easeIn } from "framer-motion";
 
 type ZikaVirusProps = {
   progress: number;
