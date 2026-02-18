@@ -35,7 +35,7 @@ export default function AboutTab() {
     <animated.div className="space-y-16 p-8" style={tabSpring}>
       {/* About Section */}
       <ScrollReveal delay={0}>
-        <section className="relative bg-white rounded-lg shadow-md overflow-hidden snap-none">
+        <section className="relative bg-white rounded-lg shadow-md overflow-hidden">
           {/* Content */}
           <div className="relative p-8 grid md:grid-cols-3 gap-12 items-start">
             {/* Text Content */}
@@ -74,7 +74,7 @@ export default function AboutTab() {
 
       {/* Interests & Hobbies Section */}
       <ScrollReveal delay={100}>
-        <section className="bg-white rounded-lg shadow-md p-8 snap-none">
+        <section className="bg-white rounded-lg shadow-md p-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-10">Interests & Hobbies</h2>
         <div className="grid md:grid-cols-2 gap-10">
             <div>

@@ -1,27 +1,23 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Hero from '@/components/Hero';
 import AboutTab from '@/components/AboutTab';
 import CVTab from '@/components/CVTab';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'about' | 'cv'>('about');
   const [scrollY, setScrollY] = useState(0);
-  const scrollRef = useRef<HTMLElement | null>(null);
-
   // Track scroll position
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
     const handleScroll = () => {
-      setScrollY(el.scrollTop);
+      setScrollY(window.scrollY);
     };
 
     handleScroll();
-    el.addEventListener('scroll', handleScroll);
-    return () => el.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Calculate background gradient progress based on scroll
@@ -38,17 +34,15 @@ export default function Home() {
       }} />
 
       {/* HERO Content */}
-      <div ref={scrollRef as React.Ref<HTMLDivElement>} className="h-screen overflow-y-auto snap-y snap-proximity scroll-smooth relative z-0 bg-transparent">
+      {/* Full-width Hero Section */}
+      <div className="w-screen">
+        <Hero />
+      </div>
 
-        {/* Full-width Hero Section */}
-        <div className="w-screen">
-          <Hero />
-        </div>
+      {/* Constrained main content */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 relative z-0 bg-transparent">
 
-        {/* Constrained main content */}
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 relative z-0 bg-transparent">
-
-        <section className="snap-start bg-white rounded-lg shadow-md overflow-hidden">
+        <section className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Tab Navigation Bar*/}
           <div
             className="flex border-b-2 border-gray-200 transition-all duration-300 rounded-t-lg"
@@ -85,14 +79,9 @@ export default function Home() {
 
         </section>
       </main>
-      </div>
 
       {/* Footer */}
-      <footer className="text-white py-8 mt-16 relative z-10" style={{ backgroundColor: 'var(--accent-dark)' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-400">© 2026 Victor Boddy. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

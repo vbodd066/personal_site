@@ -15,13 +15,11 @@ function ScrollReveal({ children, delay = 0 }: { children: React.ReactNode; dela
   });
 
   return (
-    <animated.div 
+    <animated.div
       ref={ref}
-      style={spring}
-    >
-      {children}
-    </animated.div>
-  );
+      style={spring}>
+        {children}</animated.div>
+        );
 }
 
 function highlightAuthorName(text: string, targetName: string): React.ReactNode[] {
@@ -43,11 +41,13 @@ export default function CVTab() {
     config: { duration: 300 },
   });
 
+
+
   return (
     <animated.div className="space-y-16 p-8" style={tabSpring}>
       {/* Education Section */}
       <ScrollReveal delay={0}>
-        <section className="bg-white rounded-lg shadow-md p-8 snap-none">
+        <section className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Education</h2>
           <div className="space-y-8">
             {resumeData.education.map((edu: any, index: number) => (
@@ -67,7 +67,7 @@ export default function CVTab() {
 
       {/* Projects Section */}
       <ScrollReveal delay={100}>
-        <section className="bg-white rounded-lg shadow-md p-8 snap-none">
+        <section className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Projects</h2>
           <div className="space-y-6">
             {[...resumeData.projects].reverse().map((project: any, index: number) => (
@@ -99,7 +99,7 @@ export default function CVTab() {
 
       {/* Publications Section */}
       <ScrollReveal delay={200}>
-        <section className="bg-white rounded-lg shadow-md p-8 snap-none">
+        <section className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Publications</h2>
           <div className="space-y-8">
             {resumeData.publications.map((pub: any, index: number) => (
@@ -130,7 +130,7 @@ export default function CVTab() {
 
       {/* Experience Section */}
       <ScrollReveal delay={300}>
-        <section className="bg-white rounded-lg shadow-md p-8 snap-none">
+        <section className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Experience</h2>
           <div className="space-y-8">
             {resumeData.experience.map((exp: any, index: number) => (
@@ -149,7 +149,7 @@ export default function CVTab() {
 
       {/* Awards Section */}
       <ScrollReveal delay={400}>
-        <section className="bg-white rounded-lg shadow-md p-8 snap-none">
+        <section className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Awards & Recognition</h2>
           <div className="space-y-5">
             {resumeData.awards.map((award: any, index: number) => (

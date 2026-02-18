@@ -5,7 +5,7 @@ export const resumeData = {
   linkedin: "https://www.linkedin.com/in/victorboddy/",
   tagline: "Biotechnology student with extensive wet lab, synthetic biology, and bioinformatics experience",
   summary: "Biotechnology student with extensive wet lab, synthetic biology, and bioinformatics experience, and leadership in large-scale research projects. Proven ability to secure funding, lead interdisciplinary teams, and run full pipelines from sampling to sequencing to analysis. Strong communicator, mentor, and award-winning project lead.",
-  
+
   education: [
     {
       school: "University of Ottawa",
