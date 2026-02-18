@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# un-comporessed 3D model of protein
+/public/crispr_hero.gltf
+
 # next.js
 /.next/
 /out/
@@ -39,3 +42,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+public/crispr_hero.gltf
